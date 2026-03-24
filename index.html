@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DEEPAK | Digital Monograph</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700;900&family=Manrope:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #CCFF00;
+      --surface: #0e0e0e;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--surface);
+      color: #fff;
+      font-family: 'Manrope', sans-serif;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    ::selection { background: var(--primary); color: var(--surface); }
+
+    /* ── CURSOR ── */
+    #cursor-dot, #cursor-ring {
+      position: fixed;
+      top: 0; left: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.08s ease, opacity 0.2s ease;
+    }
+    #cursor-dot {
+      width: 14px; height: 14px;
+      background: var(--primary);
+      mix-blend-mode: difference;
+      transform: translate(-50%, -50%);
+      z-index: 10000;
+    }
+    #cursor-ring {
+      width: 38px; height: 38px;
+      border: 1.5px solid var(--primary);
+      transform: translate(-50%, -50%);
+      transition: transform 0.18s ease, opacity 0.2s ease;
+    }
+    body:hover #cursor-dot { opacity: 1; }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed;
+      top: 0; width: 100%;
+      z-index: 50;
+      background: rgba(14,14,14,0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 3rem;
+    }
+    .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: 1.4rem;
+      letter-spacing: -0.05em;
+      color: var(--primary);
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 3rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--primary); }
+    .nav-cta {
+      background: var(--primary);
+      color: var(--surface);
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.85rem 2rem;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .nav-cta:hover { transform: scale(0.95); }
+
+    /* ── HERO ── */
+    #home {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8rem 3rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-blob {
+      position: absolute;
+      top: -20%; left: -10%;
+      width: 60%; height: 60%;
+      background: rgba(204,255,0,0.08);
+      filter: blur(120px);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .hero-inner { max-width: 1280px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+    .hero-ticker {
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.4em;
+      font-size: 0.65rem;
+      font-weight: 900;
+      height: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .hero-ticker .cursor-blink { animation: blink 1s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    h1.hero-heading {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: clamp(3.5rem, 10vw, 8vw);
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      color: #fff;
+      margin-bottom: 3rem;
+      animation: slideIn 1s ease-out both;
+    }
+    @keyframes slideIn { from{opacity:0;transform:translateX(-50px)} to{opacity:1;transform:translateX(0)} }
+
+    .text-stroke {
+      -webkit-text-stroke: 1px rgba(204,255,0,0.4);
+      color: transparent;
+      text-shadow: 0 0 10px rgba(204,255,0,0.3);
+    }
+
+    .hero-bottom {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 2rem;
+      animation: fadeUp 1s 0.5s ease-out both;
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+    .hero-desc {
+      max-width: 36rem;
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      font-weight: 300;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.5;
+    }
+    .hero-btns { display: flex; gap: 1.2rem; margin-top: 2rem; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--primary);
+      color: var(--surface);
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 1rem 2rem;
+      text-decoration: none;
+      transition: transform 0.15s;
+      display: inline-block;
+    }
+    .btn-primary:hover { transform: scale(0.95); }
+    .btn-outline {
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 1rem 2rem;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      display: inline-block;
+    }
+    .btn-outline:hover { background: var(--primary); color: var(--surface); }
+
+    .hero-stats {
+      display: flex;
+      gap: 2.5rem;
+      align-items: flex-end;
+      animation: fadeUp 1s 0.8s ease-out both;
+    }
+    .stat-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.55rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--primary);
+      margin-bottom: 0.4rem;
+    }
+    .stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+      text-transform: uppercase;
+    }
+    .stat-divider { width: 1px; height: 4rem; background: rgba(255,255,255,0.1); }
+    .stat-dim { opacity: 0.4; }
+    .stat-dim .stat-label { color: #fff; }
+
+    .scroll-arrow {
+      position: absolute;
+      bottom: 3rem; left: 3rem;
+      animation: bounce 2s ease-in-out infinite;
+      color: var(--primary);
+      font-size: 2rem;
+      line-height: 1;
+    }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(10px)} }
+
+    /* ── MARQUEE ── */
+    .marquee-wrap {
+      width: 100%;
+      background: var(--primary);
+      padding: 1.5rem 0;
+      overflow: hidden;
+      white-space: nowrap;
+      border-top: 2px solid var(--primary);
+      border-bottom: 2px solid var(--primary);
+      margin-top: 3rem;
+    }
+    .marquee-track {
+      display: inline-block;
+      animation: marquee 25s linear infinite;
+    }
+    .marquee-track span {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      text-transform: uppercase;
+      color: var(--surface);
+      padding: 0 2rem;
+    }
+    @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ── SECTION HELPERS ── */
+    .section { padding: 8rem 3rem; }
+    .section-inner { max-width: 1280px; margin: 0 auto; }
+    .section-border-top { border-top: 1px solid rgba(255,255,255,0.05); }
+    .section-border-y { border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .bg-dark { background: #0a0a0a; }
+
+    /* ── WORKS ── */
+    .works-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 6rem;
+      position: relative;
+      padding-bottom: 1.5rem;
+    }
+    .works-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 1px;
+      width: 0;
+      background: var(--primary);
+      animation: expandLine 1.5s ease-in-out forwards;
+      animation-play-state: paused;
+    }
+    .works-header.visible::after { animation-play-state: running; }
+    @keyframes expandLine { from{width:0} to{width:100%} }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2.5rem, 7vw, 5rem);
+      text-transform: uppercase;
+      letter-spacing: -0.04em;
+    }
+    .section-num {
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: clamp(0.8rem, 1.5vw, 1.2rem);
+      text-transform: uppercase;
+      padding-bottom: 0.3rem;
+    }
+    
+
+    /* Case study */
+    .case-img {
+      aspect-ratio: 16/9;
+      background: #1a1a1a;
+      border: 1px solid rgba(255,255,255,0.05);
+      overflow: hidden;
+      margin-bottom: 2.5rem;
+    }
+    .case-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); transition: filter 0.7s; }
+    .case-img:hover img { filter: grayscale(0); }
+
+    .case-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 2rem;
+    }
+    .case-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+    }
+    .case-heading {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.75rem;
+      color: #fff;
+    }
+    .case-text { color: rgba(255,255,255,0.6); font-size: 1rem; line-height: 1.75; }
+
+    /* Certs */
+    .cert-block {
+      border-left: 1px solid var(--primary);
+      padding-left: 2rem;
+      margin-top: 3rem;
+    }
+    .cert-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      text-transform: uppercase;
+    }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+    .about-img {
+      aspect-ratio: 1;
+      border-left: 8px solid var(--primary);
+      overflow: hidden;
+      filter: grayscale(1);
+      transition: filter 1s;
+    }
+    .about-img:hover { filter: grayscale(0); }
+    .about-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .about-tag {
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 0.9rem;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 1.5rem;
+    }
+    .about-heading {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: clamp(3rem, 8vw, 6rem);
+      text-transform: uppercase;
+      line-height: 0.85;
+      letter-spacing: -0.04em;
+      margin-bottom: 2.5rem;
+    }
+    .about-p {
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      font-weight: 300;
+      line-height: 1.75;
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 1.5rem;
+    }
+    .about-p strong { color: var(--primary); font-weight: 900; text-transform: uppercase; }
+    .about-p-sm { color: rgba(255,255,255,0.6); font-size: 1rem; line-height: 1.75; }
+
+    /* ── CONTACT ── */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+    }
+    .contact-heading {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: clamp(3rem, 8vw, 6rem);
+      text-transform: uppercase;
+      line-height: 0.85;
+      letter-spacing: -0.04em;
+      margin-bottom: 2rem;
+    }
+    .contact-sub {
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      font-weight: 300;
+      color: rgba(255,255,255,0.8);
+      max-width: 28rem;
+    }
+    .contact-cards { display: flex; flex-direction: column; gap: 1.5rem; justify-content: center; }
+
+    .contact-card {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1rem;
+      border: 1px solid rgba(255,255,255,0.05);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: padding-left 0.4s cubic-bezier(0.23,1,0.32,1);
+      text-decoration: none;
+      color: #fff;
+    }
+    .contact-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: var(--primary);
+      transition: left 0.4s cubic-bezier(0.23,1,0.32,1);
+      z-index: 0;
+    }
+    .contact-card:hover::before { left: 0; }
+    .contact-card:hover { padding-left: 2rem; color: var(--surface); }
+    .contact-card:hover .contact-icon {
+      border-color: var(--surface);
+      background: var(--surface);
+      color: var(--primary);
+    }
+    .contact-card:hover .contact-label { color: rgba(14,14,14,0.6); }
+
+    .contact-icon {
+      position: relative; z-index: 1;
+      width: 3rem; height: 3rem;
+      border: 1px solid var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      transition: all 0.4s cubic-bezier(0.23,1,0.32,1);
+      flex-shrink: 0;
+    }
+    .contact-content { position: relative; z-index: 1; }
+    .contact-label {
+      font-family: 'Space Grotesk', sans-serif;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      display: block;
+      margin-bottom: 0.2rem;
+      transition: color 0.3s;
+    }
+    .contact-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.1rem, 2vw, 1.6rem);
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 6rem 3rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      text-align: center;
+      background: #0a0a0a;
+      overflow: hidden;
+    }
+    .footer-marquee-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: clamp(8rem, 15vw, 15rem);
+      line-height: 1;
+      color: rgba(255,255,255,0.04);
+      text-transform: uppercase;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+      display: inline-block;
+      animation: footerScroll 10s ease-in-out alternate infinite;
+      margin-bottom: 4rem;
+    }
+    @keyframes footerScroll { from{transform:translateX(10%)} to{transform:translateX(-10%)} }
+    .footer-copy {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      color: rgba(255,255,255,0.3);
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { display: none; }
+      #home { padding: 7rem 1.5rem 3rem; }
+      .scroll-arrow { left: 1.5rem; }
+      .section { padding: 5rem 1.5rem; }
+      .about-grid, .contact-grid, .case-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .about-img { order: -1; }
+      .footer-marquee-text { font-size: 4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cursor -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- Navbar -->
+  <nav>
+    <a href="#home" class="nav-logo">DEEPAK®</a>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#works">Works</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="nav-cta">Hire Us</button>
+  </nav>
+
+  <!-- Hero -->
+  <header id="home">
+    <div class="hero-blob"></div>
+    <div class="hero-inner">
+      <div class="hero-ticker" id="ticker"><span class="cursor-blink">|</span></div>
+
+      <h1 class="hero-heading">
+        Designing<br>
+        <span class="text-stroke">Meaningful Experiences</span>
+      </h1>
+
+      <div class="hero-bottom">
+        <div>
+          <p class="hero-desc">
+            I'm a UI/UX Designer focused on creating intuitive, user-centered designs with clean visuals and smooth interactions.
+          </p>
+          <div class="hero-btns">
+            <a href="#works" class="btn-primary">View My Work</a>
+            <a href="#" class="btn-outline">Download Resume</a>
+          </div>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="stat-label">Focus</div>
+            <div class="stat-value">Product</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-dim">
+            <div class="stat-label">Goal</div>
+            <div class="stat-value">Impact</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-arrow">↓</div>
+  </header>
+
+  <!-- Marquee -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span>USER EXPERIENCE // INTERFACE DESIGN // PROBLEM SOLVING // EMPATHY //&nbsp;</span>
+      <span>USER EXPERIENCE // INTERFACE DESIGN // PROBLEM SOLVING // EMPATHY //&nbsp;</span>
+      <span>USER EXPERIENCE // INTERFACE DESIGN // PROBLEM SOLVING // EMPATHY //&nbsp;</span>
+      <span>USER EXPERIENCE // INTERFACE DESIGN // PROBLEM SOLVING // EMPATHY //&nbsp;</span>
+    </div>
+  </div>
+
+    <!-- About -->
+  <section id="about" class="section section-border-y bg-dark">
+    <div class="section-inner">
+      <div class="about-grid">
+        <div class="about-img reveal">
+          <img
+            src="./image/Android Compact - 9.png"
+            alt="Portrait"
+            referrerpolicy="no-referrer"
+          />
+        </div>
+        <div class="reveal">
+          <span class="about-tag">About Me</span>
+          <h2 class="about-heading">Solving<br><span class="text-stroke">Problems</span></h2>
+          <p class="about-p">
+            I'm a passionate UI/UX designer with a strong interest in solving real-world problems through design. I enjoy transforming ideas into user-friendly digital experiences.
+          </p>
+          <p class="about-p">
+            With a background in <strong>Computer Science</strong>, I combine creativity and logic to design products that are both functional and visually appealing.
+          </p>
+          <p class="about-p-sm">
+            I'm constantly learning and improving my skills in user research, wireframing, prototyping, and interaction design.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Works / Case Study -->
+  <section id="works" class="section">
+    <div class="section-inner">
+      <div class="works-header" id="worksHeader">
+        <h2 class="section-title">Case Study</h2>
+        <span class="section-num">001</span>
+      </div>
+
+      <div class="reveal">
+        <div class="case-img">
+          <img
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPVAZRJ_8pUaEQs06xAv6dgQGhe4AoqneoV25HY_G1X3AhSue-Y_Al_x0OyIMVlHNVmPY8g1ZjJL1O2uSHWh7E5nRjJ6MExc9tJdI80l5I-o4ygcQzu1spHY9-aIhMdKzhkbmY3qNQXYtWq1wB1GESPmQDKDXZHRIxURhgCCyEHWNJD3b_jCa4G16jCZpQGXr7NUQosjMqEX8un5U7SvnfdFyusKYU9XgYDY5KHzKNCafhqnEsrkWifu-uS-ihPjXsXcIAA3R95M4"
+            alt="Click & Collect Project"
+            referrerpolicy="no-referrer"
+          />
+        </div>
+
+        <h3 class="case-title">Click &amp; Collect UX Case Study</h3>
+
+        <div class="case-grid">
+          <div>
+            <h4 class="case-heading">Problem</h4>
+            <p class="case-text">Users feel frustrated while shopping online due to size issues, delayed delivery, and lack of trial options.</p>
+          </div>
+          <div>
+            <h4 class="case-heading">Solution</h4>
+            <p class="case-text">Designed a "Click &amp; Collect" system where users can order online and try products in-store before purchase.</p>
+          </div>
+          <div>
+            <h4 class="case-heading">My Role</h4>
+            <p class="case-text">Research, Wireframing, UI Design, Prototyping</p>
+          </div>
+          <div>
+            <h4 class="case-heading">Outcome</h4>
+            <p class="case-text">Improved user confidence and reduced product returns.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Certifications -->
+  <section class="section section-border-top">
+    <div class="section-inner">
+      <h2 class="section-title reveal">Certifications</h2>
+      <div class="cert-block reveal">
+        <div class="cert-name">UI/UX Design Course</div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- Contact -->
+  <section id="contact" class="section section-border-top">
+    <div class="section-inner">
+      <div class="contact-grid">
+        <div>
+          <h2 class="contact-heading reveal">Let's Work<br><span class="text-stroke">Together</span></h2>
+          <p class="contact-sub reveal">I'm open to internships, freelance, and full-time opportunities.</p>
+        </div>
+        <div class="contact-cards">
+          <a href="mailto:yourmail@gmail.com" class="contact-card reveal">
+            <div class="contact-icon">📧</div>
+            <div class="contact-content">
+              <span class="contact-label">Email</span>
+              <span class="contact-value">yourmail@gmail.com</span>
+            </div>
+          </a>
+          <a href="tel:+91XXXXXXXXXX" class="contact-card reveal">
+            <div class="contact-icon">📱</div>
+            <div class="contact-content">
+              <span class="contact-label">Phone</span>
+              <span class="contact-value">+91 XXXXX XXXXX</span>
+            </div>
+          </a>
+          <a href="#" class="contact-card reveal">
+            <div class="contact-icon">🌐</div>
+            <div class="contact-content">
+              <span class="contact-label">Portfolio</span>
+              <span class="contact-value">yourlink.com</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-marquee-text">DEEPAK DEEPAK DEEPAK</div>
+    <div class="footer-copy">© 2026 Your Name</div>
+  </footer>
+
+  <script>
+    // ── Cursor ──
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.left = mx + 'px';
+      dot.style.top = my + 'px';
+    });
+
+    (function animateRing() {
+      rx += (mx - rx) * 0.15;
+      ry += (my - ry) * 0.15;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      requestAnimationFrame(animateRing);
+    })();
+
+    document.querySelectorAll('button, a, .contact-card').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        dot.style.transform = 'translate(-50%,-50%) scale(2.5)';
+        ring.style.transform = 'translate(-50%,-50%) scale(1.5)';
+        ring.style.opacity = '0.5';
+      });
+      el.addEventListener('mouseleave', () => {
+        dot.style.transform = 'translate(-50%,-50%) scale(1)';
+        ring.style.transform = 'translate(-50%,-50%) scale(1)';
+        ring.style.opacity = '1';
+      });
+    });
+
+    // ── Hero Ticker ──
+    const fullText = "DESIGNING MEANINGFUL DIGITAL EXPERIENCES THAT PEOPLE LOVE.";
+    const ticker = document.getElementById('ticker');
+    let i = 0;
+    const interval = setInterval(() => {
+      ticker.innerHTML = fullText.slice(0, i) + '<span class="cursor-blink">|</span>';
+      i++;
+      if (i > fullText.length) clearInterval(interval);
+    }, 50);
+
+    // ── Scroll Reveal ──
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          if (e.target.id === 'worksHeader') e.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.reveal, #worksHeader').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
